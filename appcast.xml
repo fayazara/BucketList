@@ -27,5 +27,31 @@
       Newest release goes on top.
     -->
 
+    <item>
+      <title>Version 0.1.0</title>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <pubDate>Thu, 12 Nov 2026 08:42:21 +0000</pubDate>
+      <description><![CDATA[
+        <h2>What's New in 0.1.0</h2>
+        <ul>
+          <li>First release of Bucket List, a native Mac app for Cloudflare R2</li>
+          <li>Sign in with Cloudflare: no access keys to copy</li>
+          <li>Browse buckets in list or icon view with image thumbnails, like Finder</li>
+          <li>Press Space to Quick Look images, video, PDFs and documents</li>
+          <li>Upload by dragging files or folders in, and download to your Downloads folder</li>
+          <li>Copy public links (custom domain or r2.dev) or private links that expire</li>
+          <li>Upload from Finder: right-click files, choose Services, Upload with Bucket List</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/fayazara/BucketList/releases/download/v0.1.0/BucketList.dmg"
+        type="application/octet-stream"
+        sparkle:edSignature="4vQvqHXl7jDUN6k+W30ZV/vq50KhhvUsfoZvKoSUN2AnSr44smTEc4pZoFHDQdIkamVvlvM/SgsgrfBsuN2ZAA=="
+        length="1815080"
+      />
+    </item>
+
   </channel>
 </rss>
