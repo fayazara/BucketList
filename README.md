@@ -2,6 +2,9 @@
 
 A native macOS app for browsing and managing your Cloudflare R2 buckets. It works like Finder.
 
+<img width="3742" height="2454" alt="Screendrop_2026-11-12-14-17-04-compressed-D118A5" src="https://github.com/user-attachments/assets/96c2f614-d539-433f-a57b-0fdbacb49942" />
+
+
 - **Sign in with Cloudflare.** Bucket List uses OAuth, so there are no keys to copy. On first use it creates an R2-only API token for each account and turns it into S3 credentials.
 - **Finder-style browsing.** List and icon views with image thumbnails, ⌘+/⌘− to resize, back/forward history, a path bar and search.
 - **Quick Look.** Press Space to preview images, video, PDFs, text and documents.
