@@ -14,6 +14,7 @@ struct Bucket_ListApp: App {
             ViewCommands()
             BrowserCommands()
             CommandGroup(after: .appInfo) {
+                CheckForUpdatesButton()
                 if delegate.app.phase == .signedIn {
                     Button("Sign Out") { delegate.app.signOut() }
                 }
@@ -24,5 +25,14 @@ struct Bucket_ListApp: App {
             SettingsView()
                 .environment(delegate.app)
         }
+    }
+}
+
+private struct CheckForUpdatesButton: View {
+    @ObservedObject private var updater = UpdaterManager.shared
+
+    var body: some View {
+        Button("Check for Updates…") { updater.checkForUpdates() }
+            .disabled(!updater.canCheckForUpdates)
     }
 }

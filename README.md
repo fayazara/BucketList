@@ -10,7 +10,7 @@ A native macOS app for browsing and managing your Cloudflare R2 buckets. It work
 - **Upload from Finder.** Right-click files in Finder, choose Services › Upload with Bucket List, and the link is copied for you.
 - **Fast.** Folder listings are cached, appear instantly and refresh in the background. Bucket List talks to R2 directly over the S3 API: no server, no Worker and no AWS SDK.
 
-Requires macOS 27.
+Requires macOS 26 or later.
 
 ## How it works
 
@@ -28,7 +28,7 @@ Requires macOS 27.
 
 ## Building
 
-1. Open `Bucket List.xcodeproj` in Xcode 27.
+1. Open `Bucket List.xcodeproj` in Xcode 27 or later.
 2. Choose your own development team.
 3. Run.
 
@@ -40,6 +40,16 @@ The OAuth client ID lives in `Bucket List/Support/Config.swift`. If you fork the
 - **Scopes:** Workers R2 Storage (Read, Edit), Workers R2 Storage Bucket Item (Read, Edit), Account API Tokens (Edit), Account Settings (Read), User Details (Read)
 
 Then put your client ID in `Config.swift`.
+
+## Releasing
+
+Updates ship through [Sparkle](https://sparkle-project.org). The release tool in `cmd/bucketlist-release` archives the app, notarizes it, builds and signs the DMG, creates the GitHub release, and updates `appcast.xml`:
+
+```bash
+go run ./cmd/bucketlist-release -build -yes -set-version 0.1.0 -set-build 1 -notes "First release"
+```
+
+See `.agents/skills/release-bucket-list/SKILL.md` for prerequisites and details.
 
 ## License
 

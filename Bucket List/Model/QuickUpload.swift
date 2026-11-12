@@ -112,6 +112,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let services = ServiceProvider()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        UpdaterManager.shared.start()
         services.app = app
         NSApp.servicesProvider = services
         NSUpdateDynamicServices()

@@ -7,6 +7,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKey.quickUploadPrefix) private var prefix = ""
     @AppStorage(SettingsKey.quickUploadPreferPublic) private var preferPublic = true
     @State private var cacheCleared = false
+    @ObservedObject private var updater = UpdaterManager.shared
 
     private var destination: Binding<BucketRef?> {
         Binding {
@@ -37,6 +38,16 @@ struct SettingsView: View {
             } footer: {
                 Text("Right-click files in Finder and choose Services › Upload with Bucket List. Files never overwrite existing ones. Without a public domain, a private link valid for 7 days is copied.")
                     .foregroundStyle(.secondary)
+            }
+
+            Section("Updates") {
+                Toggle("Automatically check for updates", isOn: Binding(
+                    get: { updater.automaticallyChecksForUpdates },
+                    set: { updater.automaticallyChecksForUpdates = $0 }))
+                LabeledContent("Version \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–")") {
+                    Button("Check Now") { updater.checkForUpdates() }
+                        .disabled(!updater.canCheckForUpdates)
+                }
             }
 
             Section("Cache") {
