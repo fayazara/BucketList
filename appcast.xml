@@ -28,6 +28,26 @@
     -->
 
     <item>
+      <title>Version 0.1.1</title>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <pubDate>Thu, 12 Nov 2026 08:49:14 +0000</pubDate>
+      <description><![CDATA[
+        <h2>What's New in 0.1.1</h2>
+        <ul>
+          <li>New app icon</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/fayazara/BucketList/releases/download/v0.1.1/BucketList.dmg"
+        type="application/octet-stream"
+        sparkle:edSignature="NZ8FneUI05KAY27qGunumbZgHwdN3YPqi6X/Ys9RKS/nmzeWvq6YjSL6bU4yV72QIAZDtMqixmzwMM7Tu3AZBA=="
+        length="4134437"
+      />
+    </item>
+
+    <item>
       <title>Version 0.1.0</title>
       <sparkle:version>2</sparkle:version>
       <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
