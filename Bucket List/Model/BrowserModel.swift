@@ -140,8 +140,17 @@ final class BrowserModel {
 
     var isPreviewing: Bool { quickLookURL != nil || infoItem != nil || previewTask != nil }
 
+    /// The panel can close without telling us (its close button, Esc or Space while it's
+    /// key only order it out). Drop stale state so a later click doesn't reopen it.
+    private func syncWithPanel() {
+        if quickLookURL != nil, !QuickLookController.shared.isVisible {
+            quickLookURL = nil
+        }
+    }
+
     /// Space: preview the first selected file, or close the preview.
     func togglePreview() {
+        syncWithPanel()
         if isPreviewing {
             closePreview()
         } else if let item = visibleItems.first(where: { selection.contains($0.id) && !$0.isFolder }) {
@@ -151,6 +160,7 @@ final class BrowserModel {
 
     /// Follows the selection while a preview is open, like Finder.
     func selectionChanged() {
+        syncWithPanel()
         guard isPreviewing else { return }
         if let item = visibleItems.first(where: { selection.contains($0.id) && !$0.isFolder }) {
             preview(item)

@@ -23,6 +23,11 @@ final class QuickLookController: NSObject, QLPreviewPanelDataSource, QLPreviewPa
         if !panel.isVisible { panel.orderFront(nil) }
     }
 
+    /// Whether the panel is actually on screen, whatever closed it.
+    var isVisible: Bool {
+        QLPreviewPanel.sharedPreviewPanelExists() && (QLPreviewPanel.shared()?.isVisible ?? false)
+    }
+
     func close() {
         url = nil
         onClose = nil
@@ -42,7 +47,8 @@ final class QuickLookController: NSObject, QLPreviewPanelDataSource, QLPreviewPa
 
     // MARK: QLPreviewPanelDelegate
 
-    /// The panel's own close button (or Esc while it's key) clears the model's state.
+    /// Clears the model's state when the panel is closed with `close()`. Ordering it out
+    /// (Esc, Space) doesn't send this, so the model also checks `isVisible`.
     func windowWillClose(_ notification: Notification) {
         let onClose = self.onClose
         url = nil
