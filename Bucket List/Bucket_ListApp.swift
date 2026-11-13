@@ -11,6 +11,7 @@ struct Bucket_ListApp: App {
         }
         .defaultSize(width: 1100, height: 700)
         .commands {
+            SidebarCommands()
             ViewCommands()
             BrowserCommands()
             CommandGroup(after: .appInfo) {

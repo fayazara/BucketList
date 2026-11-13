@@ -69,14 +69,21 @@ struct MainView: View {
         NavigationSplitView {
             SidebarView()
                 .navigationSplitViewColumnWidth(min: 200, ideal: 240, max: 360)
+                // Like Finder: no toolbar toggle; View › Hide Sidebar (⌃⌘S) still works.
+                .toolbar(removing: .sidebarToggle)
         } detail: {
             if let bucket = app.selection {
-                BrowserView(bucket: bucket, app: app)
-                    .id(bucket)
+                // No `.id(bucket)`: keeping the view's identity keeps its toolbar
+                // and search field in place while only the model is swapped.
+                BrowserView(model: app.browser(for: bucket))
             } else {
                 ContentUnavailableView("No Bucket Selected", systemImage: "folder",
                                        description: Text("Choose a bucket in the sidebar."))
             }
+        }
+        .onChange(of: app.selection) { old, _ in
+            if let old { app.existingBrowser(for: old)?.closePreview() }
+            QuickLookController.shared.close()
         }
     }
 }

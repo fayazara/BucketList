@@ -40,6 +40,20 @@ final class AppModel {
     /// Public base URL per bucket (nil = not public). Filled lazily.
     @ObservationIgnored private var publicBases: [BucketRef: String?] = [:]
 
+    /// One browser per bucket, kept for the session so switching buckets reuses
+    /// its listing, folder, and history instead of rebuilding from scratch.
+    @ObservationIgnored private var browsers: [BucketRef: BrowserModel] = [:]
+
+    func browser(for bucket: BucketRef) -> BrowserModel {
+        if let existing = browsers[bucket] { return existing }
+        let model = BrowserModel(bucket: bucket, app: self)
+        browsers[bucket] = model
+        model.show("")
+        return model
+    }
+
+    func existingBrowser(for bucket: BucketRef) -> BrowserModel? { browsers[bucket] }
+
     init() {
         if let saved = Keychain.load(OAuthTokens.self, key: Self.tokensKey) {
             tokens = saved
@@ -106,6 +120,7 @@ final class AppModel {
         Thumbnails.shared.clear()
         Previews.shared.clear()
         publicBases = [:]
+        browsers = [:]
         tokens = nil
         refreshTask = nil
         clients = [:]

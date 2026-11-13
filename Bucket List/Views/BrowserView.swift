@@ -2,16 +2,12 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct BrowserView: View {
-    @State private var model: BrowserModel
+    let model: BrowserModel
     @AppStorage(SettingsKey.viewMode) private var mode: ViewMode = .list
     @AppStorage(SettingsKey.listZoom) private var listZoom = Zoom.defaultList
     @AppStorage(SettingsKey.gridZoom) private var gridZoom = Zoom.defaultGrid
     @State private var isDropTargeted = false
     @State private var spaceKey = SpaceKeyMonitor()
-
-    init(bucket: BucketRef, app: AppModel) {
-        _model = State(initialValue: BrowserModel(bucket: bucket, app: app))
-    }
 
     var body: some View {
         @Bindable var model = model
@@ -43,13 +39,17 @@ struct BrowserView: View {
             .onDisappear { model.closePreview() }
             .focusedSceneValue(\.browser, model)
             .background(WindowReader { spaceKey.window = $0 })
-            .onAppear { spaceKey.start { model.togglePreview() } }
             .onDisappear { spaceKey.stop() }
             .navigationTitle(model.title)
             .toolbar { toolbar }
             .searchable(text: $model.query, placement: .toolbar, prompt: "Search this folder")
-            .task { model.show("") }
-            .task { await poll() }
+            .task(id: model.bucket) {
+                // Re-run per bucket so the key monitor and poller act on the current model.
+                let model = model
+                spaceKey.start { model.togglePreview() }
+                model.refreshIfStale()
+                await poll(model)
+            }
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
                 model.refreshIfStale()
             }
@@ -98,7 +98,7 @@ struct BrowserView: View {
     }
 
     /// Visible-folder refresh every 60 s while the app is frontmost.
-    private func poll() async {
+    private func poll(_ model: BrowserModel) async {
         while !Task.isCancelled {
             try? await Task.sleep(for: .seconds(60))
             if NSApp.isActive { model.refreshIfStale() }
@@ -257,6 +257,7 @@ private struct ListBrowser<Menu: View>: View {
             .width(min: 80, ideal: 140)
         }
         .tableStyle(.inset(alternatesRowBackgrounds: true))
+        .background(FinderTableHeader())
         .contextMenu(forSelectionType: BrowserItem.ID.self) { ids in
             menu(model.items.filter { ids.contains($0.id) })
         } primaryAction: { ids in
@@ -550,5 +551,69 @@ private struct InfoPreview: View {
             dismiss()
             return .handled
         }
+    }
+}
+
+// MARK: - Table header
+
+/// Makes the SwiftUI table's header look like Finder's: the last column stretches to
+/// the edge (no dangling divider after "Kind"), and no divider is drawn in the inset
+/// padding before "Name". SwiftUI exposes neither, so this adjusts the backing NSTableView.
+private struct FinderTableHeader: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        Self.apply(near: view, attempts: 50)
+        return view
+    }
+
+    func updateNSView(_ view: NSView, context: Context) {}
+
+    /// The NSTableView is created after this view, so look again until it shows up.
+    private static func apply(near view: NSView, attempts: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak view] in
+            guard let view else { return }
+            if let table = findTable(near: view) { configure(table) } else if attempts > 0 { apply(near: view, attempts: attempts - 1) }
+        }
+    }
+
+    private static func findTable(near view: NSView) -> NSTableView? {
+        var ancestor = view.superview
+        while let current = ancestor {
+            if let table = tableView(in: current) { return table }
+            ancestor = current.superview
+        }
+        return nil
+    }
+
+    private static func configure(_ table: NSTableView) {
+        table.columnAutoresizingStyle = .lastColumnOnlyAutoresizingStyle
+        table.sizeLastColumnToFit()
+        // Swap the class of SwiftUI's own header (rather than replacing the view) so it
+        // keeps its configuration; the subclass adds no stored properties.
+        if let header = table.headerView, type(of: header) == NSTableHeaderView.self {
+            object_setClass(header, InsetlessHeaderView.self)
+            header.needsDisplay = true
+        }
+    }
+
+    private static func tableView(in view: NSView) -> NSTableView? {
+        if let table = view as? NSTableView, table.headerView != nil { return table }
+        for sub in view.subviews { if let table = tableView(in: sub) { return table } }
+        return nil
+    }
+}
+
+/// Header that skips drawing in the inset strip before the first column, where
+/// AppKit otherwise puts a stray column divider. The bottom hairline still spans the width.
+private final class InsetlessHeaderView: NSTableHeaderView {
+    override func draw(_ dirtyRect: NSRect) {
+        guard let table = tableView, table.numberOfColumns > 0 else { return super.draw(dirtyRect) }
+        let inset = table.rect(ofColumn: 0).minX
+        NSGraphicsContext.saveGraphicsState()
+        let clip = NSBezierPath(rect: NSRect(x: inset, y: bounds.minY, width: bounds.width - inset, height: bounds.height))
+        clip.append(NSBezierPath(rect: NSRect(x: bounds.minX, y: bounds.maxY - 1, width: inset, height: 1)))
+        clip.addClip()
+        super.draw(dirtyRect)
+        NSGraphicsContext.restoreGraphicsState()
     }
 }
