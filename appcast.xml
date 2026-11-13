@@ -28,6 +28,29 @@
     -->
 
     <item>
+      <title>Version 0.1.3</title>
+      <sparkle:version>5</sparkle:version>
+      <sparkle:shortVersionString>0.1.3</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <pubDate>Fri, 13 Nov 2026 03:36:19 +0000</pubDate>
+      <description><![CDATA[
+        <h2>What's New in 0.1.3</h2>
+        <ul>
+          <li>Fixed the toolbar flickering when switching between buckets</li>
+          <li>Switching buckets is faster: each bucket remembers its folder and listing</li>
+          <li>Toolbar and file list header now look more like Finder</li>
+          <li>Added View &gt; Show/Hide Sidebar (Control-Command-S)</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/fayazara/BucketList/releases/download/v0.1.3/BucketList.dmg"
+        type="application/octet-stream"
+        sparkle:edSignature="wiP5JuZnNIEttqXUNWNr/vNeW5Cn16bwEhbMatqeqZcwIu3aZlKCP5ukXVRm4IzK04ytkqadfm0Ok3iyxCXaBA=="
+        length="4141155"
+      />
+    </item>
+
+    <item>
       <title>Version 0.1.2</title>
       <sparkle:version>4</sparkle:version>
       <sparkle:shortVersionString>0.1.2</sparkle:shortVersionString>
